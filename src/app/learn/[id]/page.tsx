@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { TopNav } from "@/components/shared/TopNav";
 import { LESSONS, STAGES, getLessonByFolder, getLessonIndex, fetchLessonContent } from "@/lib/lessons";
 import { ChatPanel } from "@/components/chat/ChatPanel";
+import { LessonContent } from "@/components/chat/LessonContent";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -22,8 +23,6 @@ export default async function ChatPage({ params }: Props) {
 
   const { concept, code } = await fetchLessonContent(lesson.folder);
 
-  const stageLabel = STAGES.find(s => s.key === lesson.stage)?.label ?? lesson.stage;
-
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "var(--bg)" }}>
       <TopNav
@@ -40,18 +39,9 @@ export default async function ChatPage({ params }: Props) {
       />
 
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+
         {/* Sidebar */}
-        <aside
-          style={{
-            width: "200px",
-            minWidth: "200px",
-            borderRight: "0.5px solid var(--bd)",
-            overflowY: "auto",
-            background: "var(--bg)",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        <aside style={{ width: "200px", minWidth: "200px", borderRight: "0.5px solid var(--bd)", overflowY: "auto", background: "var(--bg)", display: "flex", flexDirection: "column", flexShrink: 0 }}>
           {STAGES.map(stage => {
             const stageLessons = LESSONS.filter(l => l.stage === stage.key);
             return (
@@ -70,7 +60,6 @@ export default async function ChatPage({ params }: Props) {
                         alignItems: "center",
                         gap: "8px",
                         padding: "5px 14px",
-                        cursor: "pointer",
                         borderLeft: isActive ? "1.5px solid var(--purple)" : "1.5px solid transparent",
                         background: isActive ? "var(--bg2)" : "transparent",
                         textDecoration: "none",
@@ -90,9 +79,11 @@ export default async function ChatPage({ params }: Props) {
           })}
         </aside>
 
-        {/* Main lesson content */}
+        {/* Main lesson area */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
-          <div style={{ padding: "20px 26px 16px", borderBottom: "0.5px solid var(--bd)" }}>
+
+          {/* Lesson hero */}
+          <div style={{ padding: "20px 26px 16px", borderBottom: "0.5px solid var(--bd)", flexShrink: 0 }}>
             <div style={{ fontSize: "10px", color: "var(--t3)", fontFamily: "var(--mono)", marginBottom: "6px" }}>
               Lesson {lesson.num} of {LESSONS.length} · {lesson.tag}
             </div>
@@ -104,83 +95,18 @@ export default async function ChatPage({ params }: Props) {
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "8px" }}>
               {lesson.keys.map(k => (
-                <span
-                  key={k}
-                  style={{
-                    fontSize: "10px",
-                    padding: "2px 7px",
-                    borderRadius: "2px",
-                    background: "var(--bg3)",
-                    color: "var(--t3)",
-                    border: "0.5px solid var(--bd2)",
-                    fontFamily: "var(--mono)",
-                  }}
-                >
+                <span key={k} style={{ fontSize: "10px", padding: "2px 7px", borderRadius: "2px", background: "var(--bg3)", color: "var(--t3)", border: "0.5px solid var(--bd2)", fontFamily: "var(--mono)" }}>
                   {k}
                 </span>
               ))}
             </div>
           </div>
 
-          <div style={{ flex: 1, overflowY: "auto", padding: "20px 26px" }}>
-            <div style={{ fontSize: "10px", color: "var(--t4)", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: "14px" }}>
-              {stageLabel}
-            </div>
-
-            {concept ? (
-              <div style={{ fontSize: "13px", color: "var(--t2)", lineHeight: 1.75, maxWidth: "600px", marginBottom: "16px" }}>
-                {concept.slice(0, 800)}
-              </div>
-            ) : (
-              <div style={{ fontSize: "13px", color: "var(--t3)", marginBottom: "16px" }}>
-                {lesson.desc}
-              </div>
-            )}
-
-            {code && (
-              <>
-                <div style={{ fontSize: "10px", fontWeight: 500, color: "var(--t3)", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: "8px", marginTop: "18px" }}>
-                  Implementation
-                </div>
-                <pre
-                  style={{
-                    background: "var(--bg2)",
-                    border: "0.5px solid var(--bd2)",
-                    borderRadius: "5px",
-                    padding: "14px 16px",
-                    fontFamily: "var(--mono)",
-                    fontSize: "11px",
-                    color: "#d4d4d4",
-                    lineHeight: 1.7,
-                    whiteSpace: "pre-wrap",
-                    marginBottom: "10px",
-                  }}
-                >
-                  {code.slice(0, 1200)}
-                </pre>
-              </>
-            )}
-
-            <div style={{ display: "flex", gap: "7px", marginTop: "14px", paddingTop: "12px", borderTop: "0.5px solid var(--bd)" }}>
-              {prev ? (
-                <a href={`/learn/${prev.folder}`} style={{ fontSize: "11.5px", padding: "5px 12px", border: "0.5px solid var(--bd2)", borderRadius: "4px", background: "transparent", color: "var(--t2)", textDecoration: "none" }}>
-                  ← {prev.title}
-                </a>
-              ) : (
-                <a href="/learn" style={{ fontSize: "11.5px", padding: "5px 12px", border: "0.5px solid var(--bd2)", borderRadius: "4px", background: "transparent", color: "var(--t2)", textDecoration: "none" }}>
-                  ← roadmap
-                </a>
-              )}
-              {next && (
-                <a href={`/learn/${next.folder}`} style={{ fontSize: "11.5px", padding: "5px 12px", border: "0.5px solid var(--acc)", borderRadius: "4px", background: "var(--acc)", color: "#000", textDecoration: "none" }}>
-                  {next.title} →
-                </a>
-              )}
-            </div>
-          </div>
+          {/* Tabbed content — client component renders markdown */}
+          <LessonContent lesson={lesson} concept={concept} code={code} prev={prev} next={next} />
         </div>
 
-        {/* AI Tutor — client component, no direct API key access */}
+        {/* AI Tutor panel */}
         <ChatPanel lesson={lesson} concept={concept} />
       </div>
     </div>

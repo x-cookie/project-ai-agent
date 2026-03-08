@@ -1,8 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { buildSystemPrompt } from "@/lib/tutor";
 import type { Lesson } from "@/lib/lessons";
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: Request) {
   const { question, lesson, concept } = (await req.json()) as {
@@ -15,17 +12,31 @@ export async function POST(req: Request) {
     return Response.json({ error: "Missing question or lesson" }, { status: 400 });
   }
 
-  const message = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 1000,
-    system: buildSystemPrompt(lesson, concept ?? ""),
-    messages: [{ role: "user", content: question }],
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": "http://localhost:3000",
+      "X-Title": "AI Agents from Scratch",
+    },
+    body: JSON.stringify({
+      model: "mistralai/ministral-3b-2512",
+      max_tokens: 1000,
+      messages: [
+        { role: "system", content: buildSystemPrompt(lesson, concept ?? "") },
+        { role: "user",   content: question },
+      ],
+    }),
   });
 
-  const answer = message.content
-    .filter(b => b.type === "text")
-    .map(b => (b as { type: "text"; text: string }).text)
-    .join("");
+  if (!res.ok) {
+    const err = await res.text();
+    return Response.json({ error: `OpenRouter error: ${err}` }, { status: 500 });
+  }
+
+  const data = await res.json();
+  const answer = data.choices?.[0]?.message?.content ?? "Something went wrong.";
 
   return Response.json({ answer });
 }
