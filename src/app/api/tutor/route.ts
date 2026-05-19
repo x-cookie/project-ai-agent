@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     return Response.json({ error: "Missing question or lesson" }, { status: 400 });
   }
 
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -23,6 +23,7 @@ export async function POST(req: Request) {
     body: JSON.stringify({
       model: "mistralai/ministral-3b-2512",
       max_tokens: 1000,
+      stream: true,
       messages: [
         { role: "system", content: buildSystemPrompt(lesson, concept ?? "") },
         { role: "user",   content: question },
@@ -30,13 +31,17 @@ export async function POST(req: Request) {
     }),
   });
 
-  if (!res.ok) {
-    const err = await res.text();
+  if (!upstream.ok) {
+    const err = await upstream.text();
     return Response.json({ error: `OpenRouter error: ${err}` }, { status: 500 });
   }
 
-  const data = await res.json();
-  const answer = data.choices?.[0]?.message?.content ?? "Something went wrong.";
-
-  return Response.json({ answer });
+  /* Pipe the SSE stream directly to the browser */
+  return new Response(upstream.body, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "X-Accel-Buffering": "no",
+    },
+  });
 }

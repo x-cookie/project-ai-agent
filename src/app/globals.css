@@ -131,19 +131,14 @@ body {
   margin: 18px 0;
 }
 
-.prose-md table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  margin-bottom: 12px;
-}
+.prose-md .table-wrap { overflow-x: auto; margin-bottom: 12px; border-radius: 5px; border: 0.5px solid var(--bd2); }
+.prose-md table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 320px; }
 .prose-md th,
-.prose-md td {
-  padding: 7px 10px;
-  border: 0.5px solid var(--bd2);
-  text-align: left;
-}
-.prose-md th { color: var(--t2); background: var(--bg3); }
+.prose-md td  { padding: 8px 12px; border-bottom: 0.5px solid var(--bd2); text-align: left; white-space: nowrap; }
+.prose-md th  { color: var(--t1); background: var(--bg3); font-weight: 500; border-bottom: 0.5px solid var(--bd3); }
+.prose-md td  { color: var(--t2); }
+.prose-md tr:last-child td { border-bottom: none; }
+.prose-md tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
 
 /* highlight.js github-dark override */
 .hljs { background: transparent !important; color: #e6edf3; }
@@ -169,12 +164,31 @@ body {
 .chat-md code              { font-family: var(--mono); font-size: 10.5px; background: var(--bg4); border: 0.5px solid var(--bd2); border-radius: 3px; padding: 1px 4px; color: #d4d4d4; }
 .chat-md pre               { background: var(--bg) !important; border: 0.5px solid var(--bd2); border-radius: 4px; padding: 10px 12px; margin: 6px 0; overflow-x: auto; }
 .chat-md pre code          { background: transparent; border: none; padding: 0; font-size: 10.5px; line-height: 1.65; }
-.chat-md table             { width: 100%; border-collapse: collapse; font-size: 11px; margin: 6px 0; }
-.chat-md th, .chat-md td   { padding: 4px 8px; border: 0.5px solid var(--bd2); text-align: left; }
-.chat-md th                { background: var(--bg3); color: var(--t2); font-weight: 500; }
-.chat-md td                { color: var(--t3); }
+.chat-md .table-wrap       { overflow-x: auto; margin: 6px 0; border-radius: 4px; border: 0.5px solid var(--bd2); }
+.chat-md table             { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 260px; }
+.chat-md th, .chat-md td   { padding: 5px 10px; border-bottom: 0.5px solid var(--bd2); text-align: left; white-space: nowrap; }
+.chat-md th                { background: var(--bg4); color: var(--t1); font-weight: 500; border-bottom: 0.5px solid var(--bd3); }
+.chat-md td                { color: var(--t2); }
+.chat-md tr:last-child td  { border-bottom: none; }
+.chat-md tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
 .chat-md a                 { color: var(--purple); text-decoration: none; }
 .chat-md blockquote        { border-left: 2px solid var(--purple); padding-left: 10px; color: var(--t3); font-style: italic; margin: 4px 0; }
+
+/* ── Streaming cursor on active AI bubble ────────────────────── */
+.chat-md.streaming p:last-of-type::after,
+.chat-md.streaming li:last-child::after,
+.chat-md.streaming > *:last-child::after {
+  content: "▊";
+  font-size: 10px;
+  color: var(--purple);
+  animation: blink-cursor 0.65s step-end infinite;
+  margin-left: 1px;
+  vertical-align: middle;
+}
+@keyframes blink-cursor { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ── Spinner for send button while loading ───────────────────── */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 /* ── Typing animation ────────────────────────────────────────── */
 @keyframes typing-dot {
