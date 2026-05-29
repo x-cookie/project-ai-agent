@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { ParticleField } from "@/components/landing/ParticleField";
-import { LESSONS, STAGES } from "@/lib/lessons";
+import { LESSONS, STAGES, STAGE_GROUPS } from "@/lib/lessons";
 
 /* ── helpers ─────────────────────────────────────────────────── */
 function useCountUp(target: number, duration = 1800) {
@@ -69,9 +69,9 @@ function FeatureCard({ icon, title, desc }: { icon: string; title: string; desc:
 
 /* ── main ────────────────────────────────────────────────────── */
 export default function LandingPage() {
-  const fundamentals   = LESSONS.filter(l => l.stage === "fundamentals");
-  const agentPatterns  = LESSONS.filter(l => l.stage === "agent-patterns");
-  const advancedReason = LESSONS.filter(l => l.stage === "advanced-reasoning");
+  const fundamentals   = STAGE_GROUPS["fundamentals"];
+  const agentPatterns  = STAGE_GROUPS["agent-patterns"];
+  const advancedReason = STAGE_GROUPS["advanced-reasoning"];
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)", overflow: "hidden" }}>

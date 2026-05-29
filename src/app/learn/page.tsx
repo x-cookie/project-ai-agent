@@ -2,15 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LESSONS, STAGES } from "@/lib/lessons";
+import { LESSONS, STAGES, STAGE_GROUPS } from "@/lib/lessons";
 import { getCompleted } from "@/lib/progress";
 import { CircuitBackground } from "@/components/roadmap/CircuitBackground";
-
-const stageGroups = {
-  fundamentals:         LESSONS.filter(l => l.stage === "fundamentals"),
-  "agent-patterns":     LESSONS.filter(l => l.stage === "agent-patterns"),
-  "advanced-reasoning": LESSONS.filter(l => l.stage === "advanced-reasoning"),
-};
 
 function NodeCard({ lesson, completed, unlocked }: { lesson: (typeof LESSONS)[0]; completed: boolean; unlocked: boolean }) {
   const base: React.CSSProperties = {
@@ -127,7 +121,7 @@ export default function BranchPage() {
       {/* Skill tree */}
       <div style={{ flex: 1, overflowY: "auto", padding: "28px 32px", position: "relative", zIndex: 1 }}>
         {STAGES.map(stage => {
-          const lessons = stageGroups[stage.key as keyof typeof stageGroups];
+          const lessons = STAGE_GROUPS[stage.key as keyof typeof STAGE_GROUPS];
           return (
             <div key={stage.key} style={{ marginBottom: "36px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
@@ -142,7 +136,7 @@ export default function BranchPage() {
                 {lessons.map((lesson, i) => {
                   const done = completed.has(lesson.folder);
                   const unlocked = i === 0
-                    ? (stage.key === "fundamentals" || completed.has(stageGroups[stage.key === "agent-patterns" ? "fundamentals" : "agent-patterns"].slice(-1)[0].folder))
+                    ? (stage.key === "fundamentals" || completed.has(STAGE_GROUPS[stage.key === "agent-patterns" ? "fundamentals" : "agent-patterns"].slice(-1)[0].folder))
                     : completed.has(lessons[i - 1].folder);
                   const absoluteIdx = LESSONS.findIndex(l => l.id === lesson.id);
                   const isFirstLesson = absoluteIdx === 0;

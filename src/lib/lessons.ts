@@ -33,6 +33,12 @@ export const STAGES = [
   { key: "advanced-reasoning", label: "Advanced reasoning", num: "03" },
 ] as const;
 
+export const STAGE_GROUPS = {
+  fundamentals:         LESSONS.filter(l => l.stage === "fundamentals"),
+  "agent-patterns":     LESSONS.filter(l => l.stage === "agent-patterns"),
+  "advanced-reasoning": LESSONS.filter(l => l.stage === "advanced-reasoning"),
+} as const;
+
 export function getLessonByFolder(folder: string): Lesson | undefined {
   return LESSONS.find(l => l.folder === folder);
 }
