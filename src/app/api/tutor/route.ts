@@ -12,7 +12,11 @@ export async function POST(req: Request) {
     return Response.json({ error: "Missing question or lesson" }, { status: 400 });
   }
 
+  const controller = new AbortController();
+  const timeout    = setTimeout(() => controller.abort(), 28000);
+
   const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    signal: controller.signal,
     method: "POST",
     headers: {
       "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -30,6 +34,8 @@ export async function POST(req: Request) {
       ],
     }),
   });
+
+  clearTimeout(timeout);
 
   if (!upstream.ok) {
     const err = await upstream.text();
