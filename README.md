@@ -146,12 +146,46 @@ The API key lives in `.env.local` only. It is never bundled into client code.
 
 ---
 
+## Deployment
+
+### Vercel (recommended)
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel --prod
+```
+
+Set `OPENROUTER_API_KEY` in your Vercel project's Environment Variables dashboard.
+
+### Self-hosted (Node.js)
+
+```bash
+npm run build
+npm start          # runs on port 3000 by default
+```
+
+Requires Node.js 18+. Set `OPENROUTER_API_KEY` in your environment before starting.
+
+### Environment variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `OPENROUTER_API_KEY` | Yes | OpenRouter API key for the AI tutor route |
+
+---
+
 ## Contributing
 
-1. Fork the repo
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit with conventional format: `feat(scope): description`
-4. Open a pull request against `main`
+1. Fork the repo and clone it locally
+2. Create a branch: `git checkout -b feature/your-feature`
+3. Make your changes with conventional commits: `feat(scope): description`
+4. Run tests: `npm test`
+5. Open a pull request against `main`
+
+Commit types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `ci`
 
 ---
 
