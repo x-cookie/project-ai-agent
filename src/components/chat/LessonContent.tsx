@@ -28,6 +28,17 @@ export function LessonContent({ lesson, concept, code, prev, next }: Props) {
 
   useEffect(() => { setCompleted(getCompleted()); }, []);
 
+  /* Keyboard navigation: ← prev lesson, → next lesson */
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === "ArrowLeft"  && prev) window.location.href = `/learn/${prev.folder}`;
+      if (e.key === "ArrowRight" && next) window.location.href = `/learn/${next.folder}`;
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [prev, next]);
+
   const handleComplete = useCallback(() => {
     const updated = markComplete(lesson.folder);
     setCompleted(new Set(updated));
